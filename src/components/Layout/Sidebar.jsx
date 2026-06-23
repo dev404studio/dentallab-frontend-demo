@@ -44,7 +44,8 @@ import { useSelector } from "react-redux";
 
 // IMPORT HÀM PHÂN QUYỀN
 import { hasRouteAccess } from "../../config/permissions";
-import { MAIN_MENU, CUSTOMER_MENU, OTHER_MENU, SETTING_MENU } from "../../config/menuConfig";
+import { MAIN_MENU, CUSTOMER_MENU, OTHER_MENU, SETTING_MENU, SUPER_ADMIN_MENU } from "../../config/menuConfig";
+import { APP_ROLES, resolveAppRoleFromUser } from "../../config/permissions";
 
 const Sidebar = ({ collapsed }) => {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ const Sidebar = ({ collapsed }) => {
   // 1. LOGIC LẤY THÔNG TIN USER TỪ FILE 1
   const auth = useSelector((state) => state.auth);
   const currentUser = auth?.user;
+  const isSuperAdmin = resolveAppRoleFromUser(currentUser) === APP_ROLES.SUPER_ADMIN;
 
   // 2. LOGIC RESPONSIVE VÀ LAYOUT TỪ FILE 2
   const theme = useTheme();
@@ -69,16 +71,17 @@ const Sidebar = ({ collapsed }) => {
   const settingMenu = SETTING_MENU;
 
   /* ===== LỌC MENU DỰA TRÊN QUYỀN (SỬ DỤNG currentUser) ===== */
-  const filteredMainMenu = menu.filter((item) =>
+  // Super Admin chỉ thấy menu của mình
+  const filteredMainMenu = isSuperAdmin ? [] : menu.filter((item) =>
     hasRouteAccess(currentUser, item.router)
   );
-  const filteredCustomerMenu = customerMenu.filter((item) =>
+  const filteredCustomerMenu = isSuperAdmin ? [] : customerMenu.filter((item) =>
     hasRouteAccess(currentUser, item.router)
   );
-  const filteredOtherMenu = otherMenu.filter((item) =>
+  const filteredOtherMenu = isSuperAdmin ? [] : otherMenu.filter((item) =>
     hasRouteAccess(currentUser, item.router)
   );
-  const filteredSettingMenu = settingMenu.filter((item) =>
+  const filteredSettingMenu = isSuperAdmin ? [] : settingMenu.filter((item) =>
     hasRouteAccess(currentUser, item.router)
   );
 
@@ -174,6 +177,9 @@ const Sidebar = ({ collapsed }) => {
       </Toolbar>
 
       <List>
+        {/* Menu riêng cho Super Admin */}
+        {isSuperAdmin && SUPER_ADMIN_MENU.map((item) => renderMenuItem(item))}
+
         {filteredMainMenu.map((item) => renderMenuItem(item))}
 
         {hasCustomerGroup && (

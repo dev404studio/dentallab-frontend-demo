@@ -1,4 +1,5 @@
 export const APP_ROLES = {
+  SUPER_ADMIN: "super-admin",
   ADMIN: "admin",
   KE_TOAN: "ke-toan",
   NHAN_VIEN: "nhan-vien",
@@ -14,6 +15,7 @@ const normalizeRoleName = (value = "") =>
 
 export const resolveAppRoleFromUser = (user) => {
   const roleFromToken = normalizeRoleName(user?.appRole);
+  if (roleFromToken === APP_ROLES.SUPER_ADMIN) return APP_ROLES.SUPER_ADMIN;
   if (roleFromToken === APP_ROLES.ADMIN) return APP_ROLES.ADMIN;
   if (roleFromToken === APP_ROLES.KE_TOAN || roleFromToken === "ketoan") return APP_ROLES.KE_TOAN;
   if (roleFromToken === APP_ROLES.NHAN_VIEN || roleFromToken === "nhanvien") return APP_ROLES.NHAN_VIEN;
@@ -38,6 +40,10 @@ export const hasRouteAccess = (user, path) => {
   if (normalizedPath.startsWith("/ho-so")) return true;
 
   const appRole = resolveAppRoleFromUser(user);
+
+  // Super Admin có toàn quyền
+  if (appRole === APP_ROLES.SUPER_ADMIN) return true;
+
   const permissions = user?.quyenSuDung?.permissions;
 
   // Fallback cho admin cũ chưa có permissions để tránh bị khóa
@@ -53,12 +59,16 @@ export const hasRouteAccess = (user, path) => {
 };
 
 export const getDefaultPathForUser = (user) => {
+  const appRole = resolveAppRoleFromUser(user);
+
+  // Super Admin vào trang quản lý tenant
+  if (appRole === APP_ROLES.SUPER_ADMIN) return "/quan-ly-thue-bao";
+
   const permissions = user?.quyenSuDung?.permissions;
   if (permissions && Array.isArray(permissions) && permissions.length > 0) {
     return permissions[0];
   }
 
-  const appRole = resolveAppRoleFromUser(user);
   if (appRole === APP_ROLES.ADMIN) return "/";
 
   return "/ho-so";

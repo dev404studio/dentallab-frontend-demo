@@ -15,12 +15,19 @@ export default function LoginPage() {
   const [form, setForm] = useState({ identifier: "", Password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [trialExpiredMsg, setTrialExpiredMsg] = useState("");
   const [focused, setFocused] = useState(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     if (isAuthenticated) navigate("/");
+    // Hiển thị thông báo hết hạn nếu có
+    const msg = sessionStorage.getItem("trialExpiredMessage");
+    if (msg) {
+      setTrialExpiredMsg(msg);
+      sessionStorage.removeItem("trialExpiredMessage");
+    }
   }, [isAuthenticated, navigate]);
 
   const handleChange = (key, value) => {
@@ -437,6 +444,24 @@ export default function LoginPage() {
           {/* ── RIGHT: Form ── */}
           <div className="form-panel">
             <h1 className="form-heading">Đăng nhập</h1>
+
+            {/* Trial Expired Banner */}
+            {trialExpiredMsg && (
+              <div style={{
+                backgroundColor: "#fef3c7",
+                border: "1px solid #f59e0b",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginBottom: 12,
+                fontSize: 13,
+                color: "#92400e",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}>
+                ⏰ {trialExpiredMsg}
+              </div>
+            )}
 
             {/* Error */}
             {(errorMsg || error) && (

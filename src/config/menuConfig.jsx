@@ -18,7 +18,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import BadgeIcon from "@mui/icons-material/Badge";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
+import BusinessIcon from "@mui/icons-material/Business";
 
 export const MAIN_MENU = [
   { name: "Thống kê", router: "/", icon: <Dashboard /> },
@@ -47,7 +47,6 @@ export const MAIN_MENU = [
   },
   { name: "Sản Phẩm", router: "/san-pham", icon: <Category /> },
   { name: "Công Đoạn", router: "/cong-doan", icon: <AccountTree /> },
-  { name: "Kho", router: "/kho", icon: <Inventory2Icon /> },
 ];
 
 export const CUSTOMER_MENU = [
@@ -72,12 +71,17 @@ export const SETTING_MENU = [
 export const ALL_MENUS = [
   { title: "Menu Chính", items: MAIN_MENU },
   { title: "Khách Hàng", items: CUSTOMER_MENU },
-  { 
-    title: "Khác", 
+  {
+    title: "Khác",
     items: [
       ...OTHER_MENU,
       { name: "Ghi chú", router: "/ghi-chu", icon: <Assignment /> }
     ]
   },
   { title: "Thiết Lập", items: SETTING_MENU },
+];
+
+// Menu chỉ dành cho Super Admin
+export const SUPER_ADMIN_MENU = [
+  { name: "Quản lý thuê bao", router: "/quan-ly-thue-bao", icon: <BusinessIcon /> },
 ];
