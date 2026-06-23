@@ -4,11 +4,12 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../redux/slices/authSlice";
+import { getDefaultPathForUser } from "../../config/permissions";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, isAuthenticated } = useSelector(
+  const { loading, error, isAuthenticated, user } = useSelector(
     (state) => state.auth
   );
 
@@ -21,7 +22,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     setMounted(true);
-    if (isAuthenticated) navigate("/");
+    if (isAuthenticated) navigate(getDefaultPathForUser(user));
     // Hiển thị thông báo hết hạn nếu có
     const msg = sessionStorage.getItem("trialExpiredMessage");
     if (msg) {
@@ -51,6 +52,7 @@ export default function LoginPage() {
     };
     try {
       const result = await dispatch(login(payload)).unwrap();
+      navigate(getDefaultPathForUser(result.staff));
     } catch (err) {
       console.log("❌ Lỗi đăng nhập:", err);
       setErrorMsg(err || "Đăng nhập thất bại");
